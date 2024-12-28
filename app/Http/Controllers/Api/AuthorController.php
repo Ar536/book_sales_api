@@ -49,4 +49,21 @@ class AuthorController extends Controller
             "data" => $author
         ], 201);
     }
+
+    public function show(string $id){
+        $author = Author::find($id);
+
+        if(!$author) {
+            return response()->json([ 
+                "succcess" => false,
+                "message" => "Resource not found"
+            ], 404);
+        }
+
+        return response()->json([ //ketika berhasil
+            "success" => true,
+            "message" => "Get all resource",
+            "data" => $author
+        ], 200);
+    }
 }

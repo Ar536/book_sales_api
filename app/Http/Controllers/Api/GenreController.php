@@ -41,7 +41,7 @@ class GenreController extends Controller
             return response()->json([ 
                 "succcess" => false,
                 "message" => $validator->errors()
-            ], 422);
+            ], 404);
         }
         
         //membuat data genre
@@ -56,5 +56,22 @@ class GenreController extends Controller
             "message" => "Resource added succesfully",
             "data" => $genre
         ], 201);
+    }
+
+    public function show(string $id){
+        $genre = Genre::find($id);
+
+        if(!$genre) {
+            return response()->json([ 
+                "succcess" => false,
+                "message" => "Resource not found!"
+            ], 402);
+        };
+
+        return response()->json([ //ketika berhasil
+            "success" => true,
+            "message" => "Get all resource",
+            "data" => $genre
+        ], 200);
     }
 }
