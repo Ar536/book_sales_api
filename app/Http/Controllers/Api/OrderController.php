@@ -24,7 +24,7 @@ class OrderController extends Controller
 
         // 2. cek validator
         if($validator->fails()) {
-            return response()->json([ 
+            return response()->json([
                 "succcess" => false,
                 "message" => $validator->errors()
             ], 422);
@@ -33,25 +33,25 @@ class OrderController extends Controller
         //Buat-nomor order unik
         $orderNumber = "ORD-" . strtoupper(uniqid());
 
-        
+
         //Ambil data user yang sedang login
         $user = auth('api')->user();
-        
+
         // cek logi user
         if(!$user){
-            return response()->json([ 
+            return response()->json([
                 "succcess" => false,
                 "message" => "Unauthorized!"
             ], 401);
         }
 
-        // Ambil 1 data buku 
+        // Ambil 1 data buku
         $book = Book::find($request->book_id);
         //dd($book);
-        
+
         // check stok barang
         if($book->stock < $request->quantity) {
-            return response()->json([ 
+            return response()->json([
                 "succcess" => false,
                 "message" => "Stok barang tidak cukup"
             ], 400);
@@ -62,8 +62,8 @@ class OrderController extends Controller
 
         //kurangi stok buku
         $book->stock -= $request->quantity;
-        $book->save(); 
-        
+        $book->save();
+
         // 3. insert data
         $order = Order::create([
             "order_number"=>$orderNumber,
@@ -71,6 +71,9 @@ class OrderController extends Controller
             "book_id"=>$request->book_id,
             "total_amount"=>$totalAmount,
             "status"=>"pending",
+            "staff_confirmed_by" =>$user->id,
+            "staff_confirmed_at" => now()
+
         ]); // dari request validator
 
            // 4.return response
@@ -79,6 +82,6 @@ class OrderController extends Controller
             "message" => "Order Berhasil di Terima",
             "data" => $order
         ], 201);
-       
+
     }
 }

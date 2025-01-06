@@ -5,7 +5,10 @@ use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Resources\BookResource;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -24,20 +27,28 @@ Route::middleware(['auth:api'])->group(function(){
         Route::apiResource('/books', BookController::class)->only(['store','update','destroy']);
         Route::apiResource('/genres', GenreController::class)->only(['store','update','destroy']);
         Route::apiResource('/authors', AuthorController::class)->only(['store','update','destroy']);
+        Route::apiResource('/payments',PaymentController::class)->only(['update','destroy']);
     });
 
     Route::middleware(['role:customer'])->group(function() {
         Route::apiResource('/orders',OrderController::class);
+        Route::apiResource('/payments', PaymentController::class)->only(['index','store']);
+    });
+
+    Route::middleware(['role:staff'])->group(function() {
+        Route::apiResource('/payments',PaymentController::class)->only(['update']);
     });
 });
 
 Route::apiResource('/books',BookController::class)->only(['index','show']);
 Route::apiResource('/genres',GenreController::class)->only(['index','show']);
 Route::apiResource('/authors',AuthorController::class)->only(['index','show']);
+Route::apiResource('/payments',PaymentController::class)->only(['index','show',]);
+Route::apiResource('/payment_methods',PaymentMethodController::class);
 
 
 // Route::get('/tes', function () {
-//     return  "ORD-" . strtoupper(uniqid()); // yg "ORD-" . ITU adalah concat 
+//     return  "ORD-" . strtoupper(uniqid()); // yg "ORD-" . ITU adalah concat
 // });
 
 // Route::get('/books',[BookController::class,'index']);
